@@ -1,0 +1,19 @@
+.card-login {
+  height: 100vh;
+  margin: auto;
+  justify-content: center;
+}
+
+.card-login-center {
+  display: grid;
+  place-items: center;
+  height: 100vh;
+}
+
+.avatar {
+  text-align: center;
+}
+
+.img-avatar {
+  width: 8rem;
+}
