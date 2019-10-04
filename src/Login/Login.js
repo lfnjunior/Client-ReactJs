@@ -1,19 +1,29 @@
-import React from "react";
+import React, { useState } from "react";
 import { Form, Button, Container, Row, Col, Card } from "react-bootstrap/";
 import "./Login.css";
 import user from "../../assets/user.png";
 
-function Login({ history }) {
+export default function Login({ history }) {
+  const [validated, setValidated] = useState(false);
+
   async function handleSubmit(e) {
-    history.push("/main");
+    const form = e.currentTarget;
+    if (form.checkValidity() === false) {
+      e.preventDefault();
+      e.stopPropagation();
+    } else {
+      history.push("/main");
+    }
+    setValidated(true);
   }
+
   return (
     <div className="bkg">
       <Container className="card-login">
         <Row>
           <Col md={2} xs={1} lg={3} />
           <Col md={8} xs={10} lg={6}>
-            <div className="card-login-center">
+            <div className=" card-login-center">
               <Card bg="light" className="shadow-lg p-3 mb-5 bg-white rounded">
                 <div className="avatar">
                   <Card.Img
@@ -22,21 +32,31 @@ function Login({ history }) {
                     src={user}
                   />{" "}
                 </div>
-                <Form onSubmit={handleSubmit}>
+                <Form noValidate validated={validated} onSubmit={handleSubmit}>
                   <Form.Group controlId="formBasicEmail">
                     <Form.Label>Email</Form.Label>
-                    <Form.Control type="email" placeholder="Enter email" />
+                    <Form.Control
+                      required
+                      type="email"
+                      placeholder="Informe o email"
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      Email obrigatório.
+                    </Form.Control.Feedback>
                   </Form.Group>
-
                   <Form.Group controlId="formBasicPassword">
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control type="password" placeholder="Password" />
-                  </Form.Group>
-                  <Form.Group controlId="formBasicCheckbox">
-                    <Form.Check type="checkbox" label="Check me out" />
+                    <Form.Label>Senha</Form.Label>
+                    <Form.Control
+                      required
+                      type="password"
+                      placeholder="Informe a senha"
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      Senha obrigatória.
+                    </Form.Control.Feedback>
                   </Form.Group>
                   <Button variant="primary" type="submit">
-                    Submit
+                    Acessar
                   </Button>
                 </Form>
               </Card>
@@ -48,5 +68,3 @@ function Login({ history }) {
     </div>
   );
 }
-
-export default Login;
