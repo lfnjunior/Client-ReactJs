@@ -1,12 +1,8 @@
 import React from "react";
-import Login from "./Login/Login";
+import Routes from "./Routes";
 
 function App() {
-  return (
-    <div className="bkg">
-      <Login />
-    </div>
-  );
+  return <Routes />;
 }
 
 export default App;
