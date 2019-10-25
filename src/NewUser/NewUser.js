@@ -51,7 +51,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function SignUp() {
+export default function SignUp({ history }) {
   const classes = useStyles();
 
   const [username, setUsername] = useState("");
@@ -73,8 +73,7 @@ export default function SignUp() {
       .then(response => {
         console.log(response);
         console.log(response.data);
-        //localStorage.setItem("user", _id);
-        //history.push("/dashboard");
+        history.push("/");
       })
       .catch(function(error) {
         console.log("error.config");

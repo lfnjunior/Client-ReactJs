@@ -28,7 +28,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.secondary.main
   },
   form: {
-    width: "100%", // Fix IE 11 issue.
+    width: "100%",
     marginTop: theme.spacing(1)
   },
   submit: {
@@ -52,8 +52,8 @@ export default function SignIn({ history }) {
       .then(response => {
         console.log(response);
         console.log(response.data);
-        //localStorage.setItem("user", _id);
-        //history.push("/dashboard");
+        //localStorage.setItem("user", token);
+        history.push("/dashboard");
       })
       .catch(function(error) {
         console.log("error.config");
