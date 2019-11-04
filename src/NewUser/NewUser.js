@@ -1,99 +1,86 @@
-import React, { useState } from "react";
-import Avatar from "@material-ui/core/Avatar";
-import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import TextField from "@material-ui/core/TextField";
-import Link from "@material-ui/core/Link";
-import Grid from "@material-ui/core/Grid";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
-import Container from "@material-ui/core/Container";
-import DateFnsUtils from "@date-io/date-fns";
-import ptLocale from "date-fns/locale/pt-BR";
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker
-} from "@material-ui/pickers";
-import Radio from "@material-ui/core/Radio";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import FormLabel from "@material-ui/core/FormLabel";
-import api from "../Services/api";
-
-const useStyles = makeStyles(theme => ({
-  "@global": {
-    body: {
-      backgroundColor: theme.palette.common.white
-    }
-  },
-  paper: {
-    marginTop: theme.spacing(8),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center"
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main
-  },
-  form: {
-    width: "100%",
-    marginTop: theme.spacing(3)
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2)
-  },
-  date: {
-    border: "1px solid #aaa",
-    padding: "10px",
-    borderRadius: "6px"
-  }
-}));
+import React, { useState } from 'react';
+import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import TextField from '@material-ui/core/TextField';
+import Link from '@material-ui/core/Link';
+import Grid from '@material-ui/core/Grid';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import Typography from '@material-ui/core/Typography';
+import Container from '@material-ui/core/Container';
+import DateFnsUtils from '@date-io/date-fns';
+import ptLocale from 'date-fns/locale/pt-BR';
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormLabel from '@material-ui/core/FormLabel';
+import api from '../Services/api';
+import { useSnackbar } from 'notistack';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import useStyles from './useStyles';
+import isEmail from 'isemail';
+import moment from 'moment';
 
 export default function SignUp({ history }) {
   const classes = useStyles();
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [password2, setPassword2] = useState("");
-  const [email, setEmail] = useState("");
-  const [birthdate, setBirthdate] = useState(new Date("01/01/2000"));
-  const [sex, setSex] = useState(0);
+  const { enqueueSnackbar } = useSnackbar(); //success, error, warning, info, or default
+  const [loading, setLoading] = React.useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [password2, setPassword2] = useState('');
+  const [email, setEmail] = useState('');
+  const [birthdate, setBirthdate] = useState(null);
+  const [sex, setSex] = useState('');
+
+  async function snack(msg, v = 'error') {
+    let snack = {
+      variant: v, //success, error, warning, info, or default
+      persist: false,
+      preventDuplicate: true
+    };
+    enqueueSnackbar(msg, snack);
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
-    await api
-      .post("/user", {
-        username: username,
-        password: password,
-        email: email,
-        birthdate: birthdate,
-        sex: sex
-      })
-      .then(response => {
-        console.log(response);
-        console.log(response.data);
-        history.push("/");
-      })
-      .catch(function(error) {
-        console.log("error.config");
-        console.log(error.config);
-        if (error.response) {
-          console.log("error.response.data");
-          console.log(error.response.data);
-          console.log("error.response.status");
-          console.log(error.response.status);
-          console.log("error.response.headers");
-          console.log(error.response.headers);
-        } else if (error.request) {
-          console.log("error.request");
-          console.log(error.request);
-        } else {
-          console.log('"Error", error.message:');
-          console.log("Error", error.message);
-        }
-      });
+
+    setLoading(prevLoading => !prevLoading);
+    if (username === '') snack('Campo Nome de usuário é obrigatório');
+    else if (email === '') snack('Campo Email é obrigatório');
+    else if (password === '') snack('Campo Senha é obrigatório');
+    else if (password2 === '') snack('Campo Repetir Senha é obrigatório');
+    else if (password !== password2) snack('As senhas devem ser identicas');
+    else if (!isEmail.validate(email)) snack('Email inválido');
+    else {
+      let bdt = birthdate ? moment(birthdate).format('YYYY-MM-DD') : null;
+      await api
+        .post('/user', {
+          username: username,
+          password: password,
+          email: email,
+          birthdate: bdt,
+          sex: sex
+        })
+        .then(response => {
+          console.log(response.data);
+          if (response.status === 200) {
+            history.push('/');
+          }
+        })
+        .catch(function(error) {
+          console.log(error.config.data);
+          if (error.response) {
+            if (error.response.status === 405) {
+              snack(error.response.data.message);
+            }
+          }
+        });
+    }
+    setLoading(prevLoading => !prevLoading);
   }
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -172,13 +159,13 @@ export default function SignUp({ history }) {
                   row
                 >
                   <FormControlLabel
-                    value="Marculino"
+                    value="M"
                     control={<Radio color="primary" />}
                     label="Masculino"
                     labelPlacement="end"
                   />
                   <FormControlLabel
-                    value="Feminino"
+                    value="F"
                     control={<Radio color="primary" />}
                     label="Feminino"
                     labelPlacement="end"
@@ -193,11 +180,11 @@ export default function SignUp({ history }) {
                   fullWidth
                   variant="inline"
                   inputVariant="outlined"
-                  label="With keyboard"
+                  label="Data de nascimento"
                   format="dd/MM/yyyy"
                   value={birthdate}
                   onChange={date => setBirthdate(date)}
-                  InputAdornmentProps={{ position: "start" }}
+                  InputAdornmentProps={{ position: 'start' }}
                 />
               </MuiPickersUtilsProvider>
             </Grid>
@@ -209,7 +196,7 @@ export default function SignUp({ history }) {
             color="primary"
             className={classes.submit}
           >
-            Cadastrar
+            {loading ? <CircularProgress size="1.55rem" color="inherit" /> : <>Cadastrar</>}
           </Button>
           <Grid container justify="flex-end">
             <Grid item>

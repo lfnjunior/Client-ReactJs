@@ -17,7 +17,7 @@ import Link from "@material-ui/core/Link";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import NotificationsIcon from "@material-ui/icons/Notifications";
-import { mainListItems, secondaryListItems } from "../Components/listItems";
+import { mainListItems, secondaryListItems } from "../Components/ListItems";
 import Chart from "../Components/Chart";
 import Deposits from "../Components/Deposits";
 import Orders from "../Components/Orders";
